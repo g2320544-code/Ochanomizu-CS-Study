@@ -102,6 +102,262 @@ lo <= hi の間は、
 どちらも O(n)かかる。 
  木を使うとO(logn)でできるようになる
 
+整列アルゴリズム
+• たくさんのデータを（小さい）順に並べる。 
+• 入力のデータ数は n。 
+• データは配列 table の 1 から n までに入っている
+選択法
+• 最小の要素を取ってきては、それを先頭に置く （先頭と交換 swap する）。これを繰り返す。 
+void swap (int p, int q) { 
+data_type tmp; 
+tmp.key = table[p].key; 
+tmp.otherinfo = table[p].otherinfo; 
+table[p].key = table[q].key; 
+table[p].otherinfo = table[q].otherinfo; 
+table[q].key = tmp.key; 
+table[q].otherinfo = tmp.otherinfo; 
+}
+void selectionsort () { 
+for (i = 1; i < n; i++) { 
+minpos = i; 
+for (j = i+1; j <= n; j++) { 
+if (table[j].key < table[minpos].key) {  minpos = j; } 
+} 
+swap (i, minpos); 
+} 
+}
+正当性
+内側の for 文を抜けると table[minpos] が 
+table[i] から table[n] の中で最小になる。 
+• それを table[i] に入れるので、table[i] には i 番目
+のデータが入る。 
+• これを i = 1 から n-1 まで繰り返せば、小さい順に並
+ぶ
+停止性まっとうな for 文なので止まる。
+計算量
+if 文の実行回数を数える。 
+(n −1)+(n−2)+(n−3)+⋯+1 = n(n−1)  →  
+O(n2)
+ cf. swap の実行回数はO(n)
+挿入法
+データをひとつとってきては、それを適切な位置に入れる。
+void insertionsort () { 
+ for (i = 2; i <= n; i++) { 
+  w.key = table[i].key; 
+  w.otherinfo = table[i].otherinfo; 
+  j= i - 1; 
+  while (j > 0 && w.key < table[j].key) { 
+   table[j+1].key = table[j].key; 
+   t--; 
+table[j+1].otherinfo = table[j].otherinfo; 
+j--;
+  }
+  table[j+1].key = w.key; 
+  table[j+1].otherinfo = w.otherinfo; 
+ } 
+}
+正当性
+• table[1] から table[i-1] まで並んでいる状態で 
+while 文を実行すると table[i] が 1 ～ i 番目の中の
+適切な位置に挿入される。 
+• その結果、table[1] ～ table[i] が並ぶ。 
+• これを i = 2 から n まで繰り返せば、table[1] ～ 
+table[n] 全体が並ぶ
+停止性　for 文はまっとうなので止まる。 
+• while 文は、本体で毎回 j が必ず減るので、いずれ j > 0 
+を満たさなくなって止まる。
+番兵つきの停止性• for 文はまっとうなので止まる。 
+• table[0].key に w.key を入れてあるので、j = 0 にな
+った時点で w.key = table[j].key となり、止まる。
+j>0をtable[0].key = w.key; に変える
+最良の場合の計算量入力のデータがもともと昇順に並んでいた場合。このとき 
+while 文の条件部分は毎回１回しか実行されない。 
+条件部分の実行回数
+ = 1+1+⋯+1=n−1 O(n)
+最悪の場合の計算量入力のデータがもともと降順に並んでいた場合。このとき 
+while 文の条件部分は毎回 j = 0 になるまで回る。 
+条件部分の実行回数
+ = 2+3+⋯+n= n(n+1)
+ 2 −1 O(n2)
+挿入法の計算量は　　　 
+O(n2)
+ • ほとんど整列しているデータを並べるときには速い。 
+cf. 選択法では、入力がどのようになっていても必ず　　　
+かかった。
+
+このようなケースには、これよりこれが適していて、そのコードの書き方はこれ
+
+int search (int target) {       /* table の中で target がいくつ目にあるか */
+        int pos;                /* 線形探索して返す */
+
+        pos = 0;
+        while (pos < n                          /* 最後まで到達しておらず */
+               &&                               /* かつ */
+               target != table[pos].key) {      /* まだ見つからないなら */
+                 pos++;                         /* pos を次にずらす */
+        }
+        if (pos < n) {          /* pos が n 以下なら見つかったので */
+                return (pos);   /* pos を返す */
+        } else {                /* そうでなければ */
+                return (NOT_FOUND); /* NOT_FOUND を返す */
+        }
+}
+
+void insert_end (int x, char *other) {  /* テーブルの最後にデータを追加する */
+        table[n].key = x;               /* n 番目に入れて */
+        table[n].otherinfo = other;
+        n++;                            /* n を増やす */
+}
+
+void delete (int pos) {                 /* テーブルからデータを削除する */
+        table[pos].key = table[n-1].key;                /* n-1 番目のデータを */
+        table[pos].otherinfo = table[n-1].otherinfo;    /* pos 番目に移動して */
+        n--;                                            /* n を減らす */
+}
+void insert_end (int x, char *other) {  /* テーブルの最後にデータを追加する */
+        /* 挿入するデータは、既にあるデータのどれよりも大きくなくては
+           ならない。そうでないと大小関係が崩れ、２分探索はできなくなる */
+        if (n < SIZE) {                         /* テーブルに空きがあるなら */
+                table[n].key = x;               /* n 番目に入れて */
+                table[n].otherinfo = other;
+                n++;                            /* n を増やす */
+        } else {                                /* 一杯なら */
+                printf ("テーブルが一杯です。\n"); /* メッセージを出して */
+                exit (1);                       /* 終了する */
+        }
+}
+int search (int target) {       /* table の中で target が何番目にあるか */
+        int lo, hi, mid;        /* ２分探索をして返す */
+
+        lo = 0;
+        hi = n - 1;
+        while (lo <= hi) {              /* lo <= hi の間、以下を繰り返す */
+                mid = (lo + hi) / 2;    /* mid を lo と hi の真ん中にする */
+                if (target <= table[mid].key) { /* 目的のキーが真ん中よりも左なら */
+                        hi = mid - 1;           /* hi を真ん中にする */
+                }
+                if (target >= table[mid].key) { /* 目的のキーが真ん中よりも右なら */
+                        lo = mid + 1;           /* lo を真ん中にする */
+                }
+        }
+        if (lo == hi + 2) {             /* lo = hi + 2 なら見つかったので */
+                return (lo - 1);        /* lo - 1 を返す */
+        } else {                        /* そうでなければ */
+                return (NOT_FOUND);     /* NOT_FOUND を返す */
+        }
+}
+void insert (int x, char *other, int pos) {
+        /* テーブルの pos 番目にデータを追加する */
+        int i;
+
+        if (n < SIZE) {                         /* テーブルに空きがあるなら */
+                for (i = n - 1; i >= pos; i--) { /* pos 番目以上をずらし */
+                        table[i + 1].key = table[i].key;
+                        table[i + 1].otherinfo = table[i].otherinfo;
+                }
+                table[pos].key = x;             /* pos 番目に入れて */
+                table[pos].otherinfo = other;
+                n++;                            /* n を増やす */
+        } else {                                /* 一杯なら */
+                printf ("テーブルが一杯です。\n"); /* メッセージを出して */
+                exit (1);                       /* 終了する */
+        }
+}
+
+void delete (int pos) {
+        /* テーブルの pos 番目のデータを削除する */
+        int i;
+
+        for (i = pos; i < n; i++) {             /* pos 番目以上をずらし */
+                table[i].key = table[i + 1].key;
+                table[i].otherinfo = table[i + 1].otherinfo;
+        }
+        n--;                                    /* n を減らす */
+}
+
+
+データは table[1]〜table[n] に入る */
+                                /*（table[0] は、後に番兵に使うため
+
+void insert_end (int x, char *other) {  /* テーブルの最後にデータを追加する */
+        if (n < SIZE - 1) {                     /* テーブルに空きがあるなら */
+                table[n + 1].key = x;           /* n + 1 番目に入れて */
+                table[n + 1].otherinfo = other;
+                n++;                            /* n を増やす */
+        } else {                                /* 一杯なら */
+                printf ("テーブルが一杯です。\n"); /* メッセージを出して */
+                exit (1);                       /* 終了する */
+        }
+}
+void swap (int p, int q) {      /* table[p] と table[q] を入れ換える */
+        data_type tmp;
+
+        tmp.key = table[p].key;      /* 一時的に table[p] を tmp に入れておき */
+        tmp.otherinfo = table[p].otherinfo;
+        table[p].key = table[q].key; /* table[q] を table[p] に上書きし、*/
+        table[p].otherinfo = table[q].otherinfo;
+        table[q].key = tmp.key;      /* table[q] には tmp を入れる */
+        table[q].otherinfo = tmp.otherinfo;
+}
+
+void selectionsort () {         /* 配列 table を選択法で整列する */
+        int i, j, minpos;
+
+        for (i = 1; i < n; i++) {
+                minpos = i;
+                for (j = i+1; j <= n; j++) {
+                        if (table[j].key < table[minpos].key) {
+                                minpos = j;
+                        }
+                }       /* table[i]〜table[n] の中で table[minpos] が最小 */
+                swap (i, minpos);
+        }
+}
+void insertionsort () {         /* 配列 table を挿入法で整列する */
+        int i, j;
+        data_type w;
+
+        for (i = 2; i <= n; i++) {
+                w.key = table[i].key;
+                w.otherinfo = table[i].otherinfo;
+                table[0].key = w.key;   /* 番兵 */
+                j = i - 1;
+                while (/* j > 0 && */ w.key < table[j].key) {
+                        table[j+1].key = table[j].key;
+                        table[j+1].otherinfo = table[j].otherinfo;
+                        j--;
+                }
+                table[j+1].key = w.key;
+                table[j+1].otherinfo = w.otherinfo;
+        }
+}
+typedef struct data_t {
+        int     key;            /* キー（郵便番号） */
+        char    *otherinfo;     /* その他の情報（住所） */
+} data_type;
+
+data_type       table[SIZE];    /* 大きさ SIZE の配列を宣言 */
+int             n;              /* table に格納されているデータの数 */
+                                /* データは table[1]〜table[n] に入る */
+                                /*（table[0] は、番兵として使うため）*/
+
+void insert_end (int x, char *other) {  /* テーブルの最後にデータを追加する */
+        if (n < SIZE - 1) {                     /* テーブルに空きがあるなら */
+                table[n + 1].key = x;           /* n + 1 番目に入れて */
+                table[n + 1].otherinfo = other;
+                n++;                            /* n を増やす */
+        } else {                                /* 一杯なら */
+                printf ("テーブルが一杯です。\n"); /* メッセージを出して */
+                exit (1);                       /* 終了する */
+        }
+}
+シェルソート
+• 挿入法は w の入れる位置をひとつずつ探す。 
+ • w の挿入する位置が遠いと効率が落ちる。 
+• ひとつずつではなく、ひとっ飛びにずらすことを考える。 
+• 挿入法で 1 ずらしていた部分を h にしたものを Ih と書く
+ことにする
+
 
 divide and conquer
 分割統治法を使う … 典型的には再帰で実現する。 
