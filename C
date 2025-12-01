@@ -1,1 +1,14 @@
+数値計算
 
+#include<stdio.h>
+#include<math.h>
+int main(void){
+float x, y1, y2;
+printf("Give x:");
+scanf(%f", &x);
+y1 = x*(sqrt(x*x+1)-x);桁落ちが生じうる式
+y2 = x/(sqrt(x*x+1)+x);桁落ちを防ぐ式
+printf("unchanged: %f\n, y1);
+printf("modified: %f\n", y2);
+return 0;
+}
