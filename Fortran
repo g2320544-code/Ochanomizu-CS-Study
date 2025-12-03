@@ -1,0 +1,11 @@
+program ketaochi
+implicit none !型宣言の無効化
+real x, y1, y2 !単精度実数で、倍精度ならreal(8)
+write(*,*) 'Give x: '
+read(*,*) x
+y1 = x*(sqrt(x*x+1)-x)
+y2 = x/(sqrt(x*x+1)+x)
+write(*,*) 'unchanged: ', y1
+write(*,*) 'modified: ', y2
+end program ketaochi
+
