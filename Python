@@ -3,3 +3,4 @@
 numpyで行列計算
 matplotlibでグラフの描画
 偏差、トレンド、デトレンド
+scipy　最小二乗法
