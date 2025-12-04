@@ -1,4 +1,5 @@
 ツール：Jupyter NotebookとGoogle Colab
+やっていること：データ解析
 numpyで行列計算
 matplotlibでグラフの描画
-偏差、トレンド、
+偏差、トレンド、デトレンド
